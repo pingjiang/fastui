@@ -1,3 +1,5 @@
+import 'iview/dist/styles/iview.css';
+
 import Vue from 'vue';
 import iview from 'iview';
 import * as QueryBuilder from '@fastui/querybuilder';
@@ -5,8 +7,6 @@ import * as QueryBuilder from '@fastui/querybuilder';
 import App from './App.vue';
 import router from './router';
 import store from './store';
-
-import 'iview/dist/styles/iview.css';
 
 Vue.config.productionTip = false;
 

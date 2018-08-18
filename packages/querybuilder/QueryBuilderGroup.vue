@@ -1,5 +1,5 @@
 <template>
-<div class="fui-querybuilder-group">
+<div class="fui-querybuilder-group" :class="{ 'fui-querybuilder': isRoot }">
   <div class="fui-querybuilder-group-header">
     <RadioGroup :size="size" :value="value.condition" type="button"
       @on-change="handleChange('condition', $event)">
@@ -7,13 +7,14 @@
     </RadioGroup>
 
     <ButtonGroup :size="size" class="fui-querybuilder-buttons">
-      <Button icon="ios-add" type="primary" @click="handleAddRule">Add Rule</Button>
-      <Button icon="ios-add-circle-outline" type="primary" @click="handleAddGroup">Add Group</Button>
+      <Button icon="ios-add" type="text" @click="handleAddRule">Add Rule</Button>
+      <Button icon="ios-add-circle-outline" type="text" @click="handleAddGroup">Add Group</Button>
+      <Button v-if="!isRoot" icon="ios-close" type="text" class="error" @click="doRemove"></Button>
     </ButtonGroup>
   </div>
 
   <div class="fui-querybuilder-rules">
-    <component :is="rule.condition ? 'QueryBuilderGroup' : 'QueryBuilderRule'"
+    <component :isRoot="false" :is="rule.condition ? 'QueryBuilderGroup' : 'QueryBuilderRule'"
       v-for="(rule, i) in value.rules" :key="i"
       :size="size" :fields="fields" :value="rule"
       @input="handleChange('rules', $event, i)" @remove="handleRemove(i)">
@@ -34,6 +35,10 @@ export default {
   },
 
   props: {
+    isRoot: {
+      type: Boolean,
+      default: true,
+    },
     size: {
       type: String,
       default: 'small',
@@ -95,22 +100,25 @@ export default {
 
       this.$emit('input', next);
     },
+    doRemove() {
+      this.$emit('remove');
+    },
   },
 };
 </script>
 
 <style lang="less">
 .fui-querybuilder {
+  .ivu-btn.error {
+    color: #ed4014;
+  }
+
   &-buttons {
     float: right;
   }
 
   &-btn-icon {
     padding: 0;
-
-    &.error {
-      color: red;
-    }
 
     .ivu-icon {
       font-size: 14px;
