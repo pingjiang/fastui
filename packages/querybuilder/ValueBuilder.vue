@@ -16,7 +16,7 @@ export default {
   props: {
     size: String,
     field: Object,
-    value: [String, Number, Date, Boolean],
+    value: [String, Number, Date, Boolean, Object],
   },
 
   methods: {

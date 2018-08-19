@@ -1,15 +1,15 @@
 <template>
   <div class="home">
-    <QueryBuilderDemo/>
+    <SchemaFormDemo/>
   </div>
 </template>
 
 <script>
-import QueryBuilderDemo from '../demos/QueryBuilderDemo.vue';
+import SchemaFormDemo from '../demos/SchemaFormDemo.vue';
 
 export default {
   components: {
-    QueryBuilderDemo,
+    SchemaFormDemo,
   },
 };
 </script>
