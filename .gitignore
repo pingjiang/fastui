@@ -24,3 +24,4 @@ yarn-error.log*
 *.sw*
 
 /0
+/public/videos
