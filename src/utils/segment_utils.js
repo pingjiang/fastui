@@ -75,6 +75,24 @@ export function generateColors(names) {
 
   colors = colors.map(c => '#' + c);
 
+  return [
+    {
+      name: 'red',
+      bgcolor: 'red',
+      color: 'white',
+    },
+    {
+      name: 'green',
+      bgcolor: 'green',
+      color: 'white',
+    },
+    {
+      name: 'blue',
+      bgcolor: 'blue',
+      color: 'white',
+    },
+  ];
+
   return (names || SET_DEFAULT).map((v, i) => ({
     name: v,
     bgcolor: colors[i],

@@ -1,8 +1,23 @@
 <template>
-<canvas class="drawcanvas" :width="width" :height="height" @mousedown="handleDown"></canvas>
+<canvas class="drawcanvas pixelated" :width="width" :height="height" @mousedown="handleDown"></canvas>
 </template>
 
 <script>
+function setupCanvas(canvas) {
+  // Get the device pixel ratio, falling back to 1.
+  var dpr = window.devicePixelRatio || 1;
+  // Get the size of the canvas in CSS pixels.
+  var rect = canvas.getBoundingClientRect();
+  // Give the canvas pixel dimensions of their CSS
+  // size * the device pixel ratio.
+  canvas.width = rect.width * dpr;
+  canvas.height = rect.height * dpr;
+  var ctx = canvas.getContext('2d');
+  // Scale all drawing operations by the dpr, so you
+  // don't have to worry about the difference.
+  ctx.scale(dpr, dpr);
+  return ctx;
+}
 
 function bindDraggable(e, opts) {
   if (opts.onDragStart && opts.onDragStart(e) === false) {
@@ -54,9 +69,13 @@ export default {
       type: String,
       default: 'round',
     },
+    lineCap: {
+      type: String,
+      default: 'round',
+    },
     lineWidth: {
       type: [Number, String],
-      default: 10,
+      default: 30,
     },
     scale: Number,
   },
@@ -77,11 +96,14 @@ export default {
     },
   },
   mounted() {
-    this.context = this.$el.getContext('2d');
+    const ctx = this.context = this.$el.getContext('2d');
+    ctx.translate(0.5, 0.5); //make lines sharp
 
-    this.context.strokeStyle = this.strokeStyle;
-    this.context.lineJoin = this.lineJoin;
-    this.context.lineWidth = this.lineWidth;
+    ctx.imageSmoothingEnabled = false;       /* standard */
+    ctx.mozImageSmoothingEnabled = false;    /* Firefox */
+    ctx.oImageSmoothingEnabled = false;      /* Opera */
+    ctx.webkitImageSmoothingEnabled = false; /* Safari */
+    ctx.msImageSmoothingEnabled = false;     /* IE */
   },
   methods: {
     handleDown(e) {
@@ -105,6 +127,13 @@ export default {
     },
     drawStart(e) {
       this.drawing = true;
+      const ctx = this.context;
+
+      ctx.strokeStyle = this.strokeStyle;
+      ctx.lineJoin = this.lineJoin;
+      ctx.lineCap = this.lineCap;
+      ctx.lineWidth = this.lineWidth;
+
       this.storeLastPoint(this.getDownPoint(e));
       this.context.globalCompositeOperation = this.mode === 'brush' ? 'source-over' : 'destination-out';
     },
@@ -112,11 +141,18 @@ export default {
       const ctx = this.context;
       const xy = this.getDownPoint(e);
 
+      // ctx.beginPath();
+      // ctx.strokeStyle = '#000000';
+      // ctx.moveTo(this._lastXY.x, this._lastXY.y);
+      // ctx.lineTo(xy.x, xy.y);
+      // ctx.stroke();
+
       ctx.beginPath();
+      ctx.strokeStyle = this.strokeStyle;
       ctx.moveTo(this._lastXY.x, this._lastXY.y);
       ctx.lineTo(xy.x, xy.y);
-      ctx.closePath();
       ctx.stroke();
+      ctx.closePath();
 
       this.storeLastPoint(xy);
     },
@@ -129,5 +165,15 @@ export default {
 </script>
 
 <style lang="less">
-// 
+.pixelated {
+  image-rendering: pixelated;
+  // image-rendering:optimizeSpeed;             /* Legal fallback */
+  // image-rendering:-moz-crisp-edges;          /* Firefox        */
+  // image-rendering:-o-crisp-edges;            /* Opera          */
+  // image-rendering:-webkit-optimize-contrast; /* Safari         */
+  // image-rendering:optimize-contrast;         /* CSS3 Proposed  */
+  // image-rendering:crisp-edges;               /* CSS4 Proposed  */
+  // image-rendering:pixelated;                 /* CSS4 Proposed  */
+  // -ms-interpolation-mode:nearest-neighbor;   /* IE8+           */
+}
 </style>
